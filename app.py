@@ -77,6 +77,15 @@ def hello_world():
         <label for="text_to_show">Text to Show:</label><br>
         <input type="text" id="text_to_show" name="text_to_show" value="Test" /><br><br>
 
+        <label for="scroll_speed">Scroll Speed</label><br>
+        <input type="text" id="scroll_speed" name="scroll_speed" value="50" /><br><br>
+
+        <label for="fg_hex">Foreground Color (Hex)</label><br>
+        <input type="text" id="fg_hex" name="fg_hex" value="999999" /><br><br>
+
+        <label for="bg_hex">Background Color</label><br>
+        <input type="text" id="bg_hex" name="bg_hex" value="001199" /><br><br>
+
         <input type="submit">
       </form>
     </body>
@@ -94,14 +103,23 @@ def handle_form_post():
     rainbow_cycle(.001)
   elif light_status == "on-text":
     text_to_show = request.form['text_to_show']
-    message_pixel_buffer = WS2811Letters.render_string_to_pixel_buffer(text_to_show,(255,255,255),(0,0,0))
+    scroll_speed = int(request.form['scroll_speed'])
+    fg_hex = request.form['fg_hex']
+    bg_hex = request.form['bg_hex']
+
+    ms_duration_between_frames = (1/scroll_speed) * 5
+
+    foreground_rgb = tuple(int(fg_hex[i:i+2], 16) for i in (0, 2, 4))
+    background_rgb = tuple(int(bg_hex[i:i+2], 16) for i in (0, 2, 4))
+
+    message_pixel_buffer = WS2811Letters.render_string_to_pixel_buffer(text_to_show,foreground_rgb,background_rgb)
     message_pixel_buffer_width = len(message_pixel_buffer[0])
     necessary_scroll_increments = message_pixel_buffer_width-10
 
     for window_scroll_segment in range(necessary_scroll_increments):
       windowed_pixel_buffer = WS2811Letters.render_windowed_pixel_buffer(message_pixel_buffer,window_scroll_segment)
       render_two_dimensional_array(windowed_pixel_buffer)
-      time.sleep(.05)
+      time.sleep(ms_duration_between_frames)
 
     #return jsonify(windowed_pixel_buffer)
     #for letter in text_to_show:

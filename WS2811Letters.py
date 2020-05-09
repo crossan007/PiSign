@@ -22,13 +22,13 @@ class WS2811Letters:
     return l
 
   @staticmethod
-  def draw_letter_on_array(arr, letter, color, offset_x):
+  def draw_letter_on_array(arr, letter, foreground_color, background_color, offset_x):
     i_offset = 0
     l = WS2811Letters.get_letter_pixel_array(letter)
 
     for i in range(len(l)):
       for y in range(len(l[i])):
-        arr[i+i_offset][y+offset_x] = color if l[i][y] else (0,0,0)
+        arr[i+i_offset][y+offset_x] = foreground_color if l[i][y] else background_color
     return arr
   
   @staticmethod
@@ -44,7 +44,7 @@ class WS2811Letters:
 
     offset_x = 0
     for c in message:
-      WS2811Letters.draw_letter_on_array(pixel_buffer, c, foreground_color, offset_x)
+      WS2811Letters.draw_letter_on_array(pixel_buffer, c, foreground_color, background_color, offset_x)
       offset_x += len(WS2811Letters.get_letter_pixel_array(c)[0]) + margin_right
     
     return pixel_buffer
