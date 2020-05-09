@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, jsonify
 import time
 import board
 import neopixel
@@ -84,13 +84,6 @@ def hello_world():
     """
   return page_string
 
-@app.route('/off')
-def turn_lights_off():
-  
-  response = make_response("ok",301)
-  response.headers['Location'] = '/'
-  return response
-
 @app.route('/set_status', methods=['GET', 'POST'])
 def handle_form_post():
   light_status = request.form['light_status']
@@ -101,12 +94,23 @@ def handle_form_post():
     rainbow_cycle(.001)
   elif light_status == "on-text":
     text_to_show = request.form['text_to_show']
-    for letter in text_to_show:
-      blank = copy.deepcopy(WS2811Letters.blank_canvas)
-      arr = WS2811Letters.draw_letter_on_array(blank, letter, (0,255,0), 2)
-      render_two_dimensional_array(arr)
-      time.sleep(.2)
+    message_pixel_buffer = WS2811Letters.render_string_to_pixel_buffer(text_to_show,(255,255,255),(0,0,0))
+    message_pixel_buffer_width = len(message_pixel_buffer[0])
+    necessary_scroll_increments = message_pixel_buffer_width-10
+
+    for window_scroll_segment in range(necessary_scroll_increments):
+      windowed_pixel_buffer = WS2811Letters.render_windowed_pixel_buffer(message_pixel_buffer,window_scroll_segment)
+      render_two_dimensional_array(windowed_pixel_buffer)
+      time.sleep(.05)
+
+    #return jsonify(windowed_pixel_buffer)
+    #for letter in text_to_show:
+     # blank = copy.deepcopy(WS2811Letters.blank_canvas)
+      #arr = WS2811Letters.draw_letter_on_array(blank, letter, (0,255,0), 2)
+      #render_two_dimensional_array(arr)
+      #time.sleep(.2)
 
   response = make_response("ok",301)
   response.headers['Location'] = '/'
+  response.autocorrect_location_header = False
   return response

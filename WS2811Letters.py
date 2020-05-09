@@ -10,20 +10,55 @@ class WS2811Letters:
     [b,b,b,b,b,b,b,b,b,b]
   ]
 
+
   @staticmethod
-  def draw_letter_on_array(arr, letter, color, y_offset):
-    i_offset = 0
+  def get_letter_pixel_array(letter):
     if letter in WS2811Letters.letters:
       l = WS2811Letters.letters[letter]
     elif letter.upper() in WS2811Letters.letters:
       l = WS2811Letters.letters[letter.upper()]
     elif letter.lower() in WS2811Letters.letters:
       l = WS2811Letters.letters[letter.lower()]
+    return l
+
+  @staticmethod
+  def draw_letter_on_array(arr, letter, color, offset_x):
+    i_offset = 0
+    l = WS2811Letters.get_letter_pixel_array(letter)
 
     for i in range(len(l)):
       for y in range(len(l[i])):
-        arr[i+i_offset][y+y_offset] = color if l[i][y] else (0,0,0)
+        arr[i+i_offset][y+offset_x] = color if l[i][y] else (0,0,0)
     return arr
+  
+  @staticmethod
+  def render_string_to_pixel_buffer(message,foreground_color,background_color):
+    pixel_buffer_height = 5
+    pixel_buffer_width = 0
+    margin_right = 1
+
+    for c in message:
+      pixel_buffer_width += len(WS2811Letters.get_letter_pixel_array(c)[0]) + margin_right
+  
+    pixel_buffer = [[background_color for x in range(pixel_buffer_width)] for y in range(pixel_buffer_height)]
+
+    offset_x = 0
+    for c in message:
+      WS2811Letters.draw_letter_on_array(pixel_buffer, c, foreground_color, offset_x)
+      offset_x += len(WS2811Letters.get_letter_pixel_array(c)[0]) + margin_right
+    
+    return pixel_buffer
+
+  @staticmethod
+  def render_windowed_pixel_buffer(pixel_buffer, offset_x):
+    pixel_buffer_height = 5
+    pixel_buffer_width = 10
+    new_pixel_buffer = [[[0] for x in range(pixel_buffer_width)] for y in range(pixel_buffer_height)]
+
+    for r in range(pixel_buffer_height):
+      for c in range(pixel_buffer_width):
+        new_pixel_buffer[r][c] = pixel_buffer[r][c+offset_x]
+    return new_pixel_buffer
 
   letters = {}
 
