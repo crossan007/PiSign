@@ -45,6 +45,12 @@ def rainbow_cycle(wait):
     pixels.show()
     time.sleep(wait)
 
+def halloween():
+    for i in range(num_pixels):
+        pixels[i] = (345,145,44)
+    pixels.show()
+    time.sleep(wait)
+
 def render_two_dimensional_array(arr):
     width = 10
     height = 5
@@ -70,6 +76,9 @@ def hello_world():
 
         <input type="radio" id="on-rainbow" name="light_status" value="on-rainbow">
         <label for="on-rainbow">on-rainbow</label><br>
+
+        <input type="radio" id="on-halloween" name="light_status" value="on-halloween">
+        <label for="on-halloween">on-halloween</label><br>
 
         <input type="radio" id="on-text" name="light_status" value="on-text">
         <label for="on-text">on-text</label><br>
@@ -101,6 +110,8 @@ def handle_form_post():
     pixels.show()
   elif light_status == "on-rainbow":
     rainbow_cycle(.001)
+  elif light_status == "on-halloween":
+    halloween()
   elif light_status == "on-text":
     text_to_show = request.form['text_to_show']
     scroll_speed = int(request.form['scroll_speed'])
