@@ -47,7 +47,7 @@ def rainbow_cycle(wait):
 
 def halloween():
     for i in range(num_pixels):
-        pixels[i] = (245,145,44)
+        pixels[i] = (145,245,44)
     pixels.show()
 
 def render_two_dimensional_array(arr):
