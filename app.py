@@ -49,7 +49,6 @@ def halloween():
     for i in range(num_pixels):
         pixels[i] = (245,145,44)
     pixels.show()
-    time.sleep(wait)
 
 def render_two_dimensional_array(arr):
     width = 10
